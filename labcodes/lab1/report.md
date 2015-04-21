@@ -31,3 +31,7 @@ dd if=/dev/zero of=bin/ucore.img count=10000
 - 1 文件符和stat 结构
 - 2 文件bootblock.out不大于510 字节
 - 3 文件bootblock 等512 字节
+
+## 练习2
+
+### 从CPU加电后执行的第一条指令开始， 单步跟踪BIOS的执行
