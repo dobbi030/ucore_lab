@@ -60,3 +60,15 @@ target remote :1234
     movw %ax, %es                                   # -> Extra Segment
     movw %ax, %ss                                   # -> Stack Segment
 ```
+通过将键盘控制器上的A20线置于高电位，全部32条地址线可用， 可以访问4G的内存空间
+```c
+seta20.1:
+    inb $0x64, %al                                  # Wait for not busy
+    testb $0x2, %al
+    jnz seta20.1
+
+    movb $0xd1, %al                                 # 0xd1 -> port 0x64
+    outb %al, $0x64
+
+
+```
