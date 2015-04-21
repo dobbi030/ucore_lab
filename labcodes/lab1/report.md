@@ -1,5 +1,5 @@
-# lab1
 ## 练习1
+
 ### 解释Makefile 文件
 ```bash
 gcc -Iboot/ -fno-builtin -Wall -ggdb -m32 -gstabs -nostdinc  -fno-stack-protector -Ilibs/ -Os -nostdinc -c boot/bootasm.S -o obj/boot/bootasm.o
