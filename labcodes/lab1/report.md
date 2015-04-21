@@ -70,5 +70,46 @@ seta20.1:
     movb $0xd1, %al                                 # 0xd1 -> port 0x64
     outb %al, $0x64
 
+seta20.2:
+    inb $0x64, %al                                  # Wait for not busy
+    testb $0x2, %al
+    jnz seta20.2
+
+    movb $0xdf, %al                                 # 0xdf -> port 0x60
+    outb %al, $0x60
+```
+初始化GDT表：一个简单的GDT表和其描述符已经静态储存在引导区中，载入即可
+```c
+    lgdt gdtdesc
+```
+进入保护模式：通过将cr0寄存器PE位置1便开启了保护模式
+```c
+    movl %cr0, %eax
+    orl $CR0_PE_ON, %eax
+    movl %eax, %cr0
+```
+通过长跳转更新cs的基地址
+```c
+    ljmp $PROT_MODE_CSEG, $protcseg
+
+.code32                                             # Assemble for 32-bit mode
+protcseg:
+```
+设置段寄存器，并建立堆栈
+```c
+    movw $PROT_MODE_DSEG, %ax                       # Our data segment selector
+    movw %ax, %ds                                   # -> DS: Data Segment
+    movw %ax, %es                                   # -> ES: Extra Segment
+    movw %ax, %fs                                   # -> FS
+    movw %ax, %gs                                   # -> GS
+    movw %ax, %ss                                   # -> SS: Stack Segment
+
+    # Set up the stack pointer and call into C. The stack region is from 0--start(0x7c00)
+    movl $0x0, %ebp
+    movl $start, %esp
+```
+转到保护模式完成，进入boot主方法
+```c
+call bootmain
 
 ```
