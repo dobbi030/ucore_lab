@@ -1,4 +1,6 @@
-## 解释Makefile 文件
+# lab1
+## 练习1
+解释Makefile 文件
 ```bash
 gcc -Iboot/ -fno-builtin -Wall -ggdb -m32 -gstabs -nostdinc  -fno-stack-protector -Ilibs/ -Os -nostdinc -c boot/bootasm.S -o obj/boot/bootasm.o
 + cc boot/bootmain.c
@@ -25,7 +27,7 @@ dd if=/dev/zero of=bin/ucore.img count=10000
 
 
 
-## 一个被系统认为是符合规范的硬盘主引导扇区的特是什么？
+一个被系统认为是符合规范的硬盘主引导扇区的特是什么？
 - 1 文件符和stat 结构
 - 2 文件bootblock.out不大于510 字节
 - 3 文件bootblock 等512 字节
