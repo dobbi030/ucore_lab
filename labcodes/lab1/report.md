@@ -35,3 +35,15 @@ dd if=/dev/zero of=bin/ucore.img count=10000
 ## 练习2
 
 ### 从CPU加电后执行的第一条指令开始， 单步跟踪BIOS的执行
+Makefile 中的配置
+```bash
+debug: $(UCOREIMG)
+	$(V)$(QEMU) -S -s -parallel stdio -hda $< -serial null &
+	$(V)sleep 2
+	$(V)$(TERMINAL) -e "gdb -q -tui -x tools/gdbinit"
+```
+gdbinit 中的配置
+set architecture i8086
+target remote :1234
+
+
