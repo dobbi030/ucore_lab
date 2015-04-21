@@ -26,6 +26,6 @@ dd if=/dev/zero of=bin/ucore.img count=10000
 
 
 ## 一个被系统认为是符合规范的硬盘主引导扇区的特是什么？
-1 文件符和stat 结构
-2 文件bootblock.out不大于510 字节
-3 文件bootblock 等512 字节
+- 1 文件符和stat 结构
+- 2 文件bootblock.out不大于510 字节
+- 3 文件bootblock 等512 字节
