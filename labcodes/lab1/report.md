@@ -46,4 +46,17 @@ gdbinit 中的配置
 set architecture i8086
 target remote :1234
 
+## 分析bootloader 进入保护模式的过程. 
+### 为何开启A20， 以及如何开A20
+清理环境：包括将flag置0和将段寄存器置0
+```c
+.code16                                             # Assemble for 16-bit mode
+    cli                                             # Disable interrupts
+    cld                                             # String operations increment
 
+    # Set up the important data segment registers (DS, ES, SS).
+    xorw %ax, %ax                                   # Segment number zero
+    movw %ax, %ds                                   # -> Data Segment
+    movw %ax, %es                                   # -> Extra Segment
+    movw %ax, %ss                                   # -> Stack Segment
+```
