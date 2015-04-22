@@ -198,5 +198,9 @@ bad:
 
 ```
 
-
-
+## 练习5 实现函调用堆栈跟踪函数
+最一行输出
+```c
+ebp:0x00007bf8 eip:0x00007d6f args:0xc031fcfa 0xc08ed88e 0x64e4d08e 0xfa7502a8 
+    <unknow>: -- 0x00007d6e --
+```
