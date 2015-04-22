@@ -115,11 +115,12 @@ call bootmain
 ```
 
 ## 练习4  分析bootloader加载elf格式的os 过程
+读数据到内存的制定位置
+```c
 - 1 等待磁盘准备好
 - 2 发出读取扇区的命令
 - 3 等待磁盘准备好
 - 4 把磁盘扇数据读到指定内存
-```c
 static void
 readsect(void *dst, uint32_t secno) {
     // wait for disk to be ready
@@ -139,3 +140,63 @@ readsect(void *dst, uint32_t secno) {
     insl(0x1F0, dst, SECTSIZE / 4);
 }
 ```
+
+扩展了函数readsect
+```c
+static void
+readseg(uintptr_t va, uint32_t count, uint32_t offset) {
+    uintptr_t end_va = va + count;
+
+    // round down to sector boundary
+    va -= offset % SECTSIZE;
+
+    // translate from bytes to sectors; kernel starts at sector 1
+    uint32_t secno = (offset / SECTSIZE) + 1;
+
+    // If this is too slow, we could read lots of sectors at a time.
+    // We'd write more to memory than asked, but it doesn't matter --
+    // we load in increasing order.
+    for (; va < end_va; va += SECTSIZE, secno ++) {
+        readsect((void *)va, secno);
+    }
+}
+```
+
+bootmain主函数
+
+```c
+void
+bootmain(void) {
+    // 读磁盘的第一页
+    readseg((uintptr_t)ELFHDR, SECTSIZE * 8, 0);
+
+    // 判断是是elf 文件
+    if (ELFHDR->e_magic != ELF_MAGIC) {
+        goto bad;
+    }
+
+    struct proghdr *ph, *eph;
+
+    // 加载每程段(ignores ph flags)
+    ph = (struct proghdr *)((uintptr_t)ELFHDR + ELFHDR->e_phoff);
+    eph = ph + ELFHDR->e_phnum;
+    for (; ph < eph; ph ++) {
+        readseg(ph->p_va & 0xFFFFFF, ph->p_memsz, ph->p_offset);
+    }
+
+    // elf 中调 入地址
+    // note: does not return
+    ((void (*)(void))(ELFHDR->e_entry & 0xFFFFFF))();
+
+bad:
+    outw(0x8A00, 0x8A00);
+    outw(0x8A00, 0x8E00);
+
+    /* do nothing */
+    while (1);
+}
+
+```
+
+
+
