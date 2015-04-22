@@ -46,7 +46,7 @@ gdbinit 中的配置
 set architecture i8086
 target remote :1234
 
-## 分析bootloader 进入保护模式的过程. 
+## 练习3 分析bootloader 进入保护模式的过程. 
 ### 为何开启A20， 以及如何开A20
 清理环境：包括将flag置0和将段寄存器置0
 ```c
@@ -112,4 +112,30 @@ protcseg:
 ```c
 call bootmain
 
+```
+
+## 练习4  分析bootloader加载elf格式的os 过程
+- 1 等待磁盘准备好
+- 2 发出读取扇区的命令
+- 3 等待磁盘准备好
+- 4 把磁盘扇数据读到指定内存
+```c
+static void
+readsect(void *dst, uint32_t secno) {
+    // wait for disk to be ready
+    waitdisk();
+
+    outb(0x1F2, 1);                         // count = 1
+    outb(0x1F3, secno & 0xFF);
+    outb(0x1F4, (secno >> 8) & 0xFF);
+    outb(0x1F5, (secno >> 16) & 0xFF);
+    outb(0x1F6, ((secno >> 24) & 0xF) | 0xE0);
+    outb(0x1F7, 0x20);                      // cmd 0x20 - read sectors
+
+    // wait for disk to be ready
+    waitdisk();
+
+    // read a sector
+    insl(0x1F0, dst, SECTSIZE / 4);
+}
 ```
