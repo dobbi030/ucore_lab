@@ -137,7 +137,7 @@ default_free_pages(struct Page *base, size_t n) {
     ClearPageProperty(base);
     SetPageProperty(base);
     base->property = n;
-    
+
     p = le2page(le,page_link) ;
     if( base+n == p ){
       base->property += p->property;

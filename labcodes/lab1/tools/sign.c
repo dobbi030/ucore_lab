@@ -37,6 +37,7 @@ main(int argc, char *argv[]) {
         return -1;
     }
     fclose(ofp);
+    printf("you are so bad!");
     printf("build 512 bytes boot sector: '%s' success!\n", argv[2]);
     return 0;
 }
